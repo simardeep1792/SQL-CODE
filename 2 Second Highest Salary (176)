@@ -1,0 +1,109 @@
+https://leetcode.com/problems/second-highest-salary/
+https://www.youtube.com/watch?v=mFdyfB7RdgA&list=PLdrw9_aIADIPAMJW8I_S-S747oyiRtzpS&index=2&ab_channel=FrederikM%C3%BCller
+https://thecodingbot.com/leetcode-176-second-highest-salary/
+
+Table: Employee
+
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| salary      | int  |
++-------------+------+
+id is the primary key column for this table.
+Each row of this table contains information about the salary of an employee.
+ 
+
+Write an SQL query to report the second highest salary from the Employee table. If there is no second highest salary, the query should report null.
+
+The query result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+Output: 
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| 200                 |
++---------------------+
+Example 2:
+
+Input: 
+Employee table:
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
++----+--------+
+Output: 
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| null                |
++---------------------+
+
+
+
+
+
+
+
+
+
+
+#########################################################
+
+SELECT      (
+SELECT      DISTINCT(salary)
+FROM        Employee
+ORDER BY    Salary DESC
+LIMIT       1
+OFFSET      1
+) as SecondHighestSalary ;
+
+
+In the above subquery, The first thing we need to do is to select only the distinct salary from the column Salary. 
+It is necessary to remove duplicates from the final result as without it, it would give an ambiguous result. 
+For that, we have used distinct keyword on the column Salary.
+
+Since we want to get the 2nd highest salary, it is necessary to sort the table based on salary, from highest to lowest,
+so that we can easily pick the second from the highest.
+
+In MYSQL queries, it is not straightforward to only query the 2nd record(or any record) as we do in an array(a[2])), 
+for that, we can use limit and offset keywords in MYSQL. To get the 2nd record, we will set offset such that we get records from the 2nd record skipping the first record, and then we will limit the result to only have 1 record in the final result. If we don’t use the limit, we will have all the records starting from 2nd record till last i.e 2nd,3rd, 4th, 5th…etc. We will set limit 1 to get only 1 record. This way we will get only the 2nd record. To get the salaries from high to low, we can order the column in descending order by order by and desc keyword.
+
+# Subquery
+select distinct(Salary) from Employee order by Salary desc limit 1 offset 1
+The above query should be read from the right, so, start reading the query from right to the left. 
+We first chose the starting point of the result i.e from the 2nd record(using the offset).
+Then, we limited the result to have only 1 record(using the limit). The order of limit and offset can be a little confusing in the query but it is how it is.
+
+Now the question arises, why do we require the subquery in the first place, why
+
+select distinct(Salary) from Employee order by Salary desc limit 1 offset 1
+is not sufficient, and why
+
+select (select distinct(Salary) from Employee order by Salary desc limit 1 offset 1) as SecondHighestSalary 
+gives the correct result.
+
+The reason is, the later solution(using the subqueries) handles the case when there’s no second highest salary. In that case, it returns null, but, if we don’t use the subquery(the former solution), it will return an empty string "" in case there is no second highest salary.
+
+So, select distinct(Salary) from Employee order by Salary desc limit 1 offset 1 is not the right query as it does not properly handle the case when there’s no second highest salary.
+
+This solution beats ~99.4% of all the MYSQL online submissions
+
+SELECT  MAX(salary) as SecondHighestSalary 
+FROM    Employee
+WHERE   Salary
+NOT     IN (Select MAX(Salary) FROM Employee);
