@@ -68,3 +68,8 @@ SELECT player_id,device_id FROM Activity WHERE (player_id,event_date) in (SELECT
 +-----------+-----------+
 
 
+
+SELECT player_id,device_id FROM
+(SELECT player_id,device_id,event_date,
+ROW_NUMBER OVER(PARTITION BY player_id ORDER BY event_date)AS r FROM Activity) lookup
+WHERE r=1;
