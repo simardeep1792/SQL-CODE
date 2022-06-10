@@ -1,3 +1,5 @@
+https://www.datageekinme.com/general/leetcode/leetcode-sql-570-managers-with-at-least-5-direct-reports/
+
 Question
 The Employee table holds all employees including their managers. Every employee has an Id, and there is also a column for the manager Id.
 
